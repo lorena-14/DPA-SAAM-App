@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">DPA-SAAM</string>
+    <string name="notification_alert_title">Lectura recibida</string>
+    <string name="notification_battery_title">Carga la manilla</string>
+    <string name="notification_battery_body">Batería al %1$d%% — recarga la manilla pronto</string>
+    <string name="notification_foreground_title">Conectado a manilla</string>
+    <string name="notification_foreground_body">DPA-SAAM mantiene la conexión BLE activa</string>
+    <string name="channel_alerts_name">Alertas de manilla</string>
+    <string name="channel_battery_name">Batería baja</string>
+    <string name="channel_foreground_name">Conexión BLE</string>
+
+    <!-- Textos de Permisos -->
+    <string name="permissions_notifications_title">Notificaciones necesarias</string>
+    <string name="permissions_notifications_body">DPA-SAAM necesita enviarte alertas cuando la manilla registre lecturas de SpO2 y BPM.</string>
+    <string name="permissions_notifications_grant">Conceder permiso</string>
+    <string name="permissions_open_settings">Abrir ajustes</string>
+    <string name="permissions_notifications_snackbar">Se necesitan notificaciones para alertas clínicas</string>
+    <string name="permissions_bluetooth_denied_permanently">Permisos Bluetooth denegados. Abre ajustes para habilitarlos.</string>
+    <string name="permissions_bluetooth_required">Se necesitan permisos Bluetooth para conectar la manilla</string>
+
+    <!-- Textos de la Interfaz Principal -->
+    <string name="battery_opt_title">Optimización de batería</string>
+    <string name="battery_opt_body">Para mantener la conexión clínica con la manilla, se recomienda excluir DPA-SAAM de la optimización de batería del sistema.</string>
+    <string name="battery_opt_configure">Configurar</string>
+    <string name="battery_opt_later">Ahora no</string>
+    <string name="btn_retry_connection">Reintentar conexión</string>
+    <string name="btn_simulate_alert">Simular alerta</string>
+    <string name="alert_history_title">Historial de alertas</string>
+    <string name="alert_history_empty_title">Sin lecturas</string>
+    <string name="alert_history_empty_body">Las alertas recibidas aparecerán aquí</string>
+
+    <!-- Estados de conexión y tarjetas -->
+    <string name="status_connected">Conectado</string>
+    <string name="status_scanning">Escaneando</string>
+    <string name="status_connecting">Conectando</string>
+    <string name="status_disconnected">Desconectado</string>
+    <string name="status_idle">Inactivo</string>
+    <string name="card_ble_title">Estado BLE</string>
+    <string name="card_ble_body">Conexión con la manilla ESP32</string>
+    <string name="card_alert_title">Última alerta</string>
+    <string name="card_alert_empty">Esperando lectura de la manilla</string>
+    <string name="card_battery_title">Batería manilla</string>
+    <string name="card_battery_empty">No disponible</string>
+    <string name="card_battery_low">Batería baja</string>
+
+    <!-- Subtítulos de AppBar -->
+    <string name="subtitle_connected">Manilla conectada</string>
+    <string name="subtitle_scanning">Buscando manilla...</string>
+    <string name="subtitle_connecting">Estableciendo conexión...</string>
+    <string name="subtitle_disconnected">Sin conexión — reintenta manualmente</string>
+    <string name="subtitle_idle">Preparando conexión...</string>
+
+    <!-- Errores genéricos -->
+    <string name="error_app_settings">No se pudo abrir la configuración de la app</string>
+    <string name="error_battery_opt">No se pudo solicitar exención de batería</string>
+</resources>
