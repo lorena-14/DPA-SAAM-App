@@ -6,21 +6,33 @@ import java.time.Instant
 
 class AnalizadorTramaBluetooth {
 
-    private val patronExpresionRegular = Regex(
+    // Regex para soportar "SpO2:98,BPM:72,BAT:100.0,VOL:4.10"
+    private val patronConLlaves = Regex(
         """SpO2:(?<spo2>\d+(?:\.\d+)?),BPM:(?<bpm>\d+)(?:,BAT:(?<bat>\d+(?:\.\d+)?))?(?:,VOL:(?<vol>\d+(?:\.\d+)?))?""",
         RegexOption.IGNORE_CASE,
+    )
+
+    // Regex alternativa para soportar "78,166,100.0,0.00"
+    private val patronSinLlaves = Regex(
+        """(?<spo2>\d+(?:\.\d+)?),(?<bpm>\d+)(?:,(?<bat>\d+(?:\.\d+)?))?(?:,(?<vol>\d+(?:\.\d+)?))?""",
     )
 
     fun analizarTrama(tramaTexto: String, direccionMacDispositivo: String): ResultadoOperacionApp<LecturaManilla> {
         return try {
             val textoLimpio = tramaTexto.trim()
 
-            if (!textoLimpio.contains("SpO2", ignoreCase = true)) {
-                return ResultadoOperacionApp.Error("Formato incorrecto. La trama debe contener 'SpO2:98,BPM:72', pero envió: $textoLimpio")
+            // Intenta primero con el patrón oficial (el que tiene "SpO2:...")
+            var coincidencia = patronConLlaves.matchEntire(textoLimpio)
+            
+            // Si falla, intenta con el patrón alternativo (solo comas)
+            if (coincidencia == null) {
+                coincidencia = patronSinLlaves.matchEntire(textoLimpio)
             }
 
-            val coincidencia = patronExpresionRegular.matchEntire(textoLimpio)
-                ?: return ResultadoOperacionApp.Error("Formato de lectura no reconocido: $textoLimpio")
+            // Si ambos fallan, es un formato completamente desconocido
+            if (coincidencia == null) {
+                return ResultadoOperacionApp.Error("Formato de lectura no reconocido: $textoLimpio")
+            }
 
             val spo2 = coincidencia.groups["spo2"]?.value?.toFloatOrNull()
                 ?: return ResultadoOperacionApp.Error("SpO2 inválido en la lectura")

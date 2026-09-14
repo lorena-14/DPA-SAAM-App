@@ -12,6 +12,6 @@ interface DaoAlertas {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(entidad: EntidadAlerta)
 
-    @Query("SELECT * FROM alertas ORDER BY fechaRecepcionMillis DESC")
+    @Query("SELECT * FROM alertas ORDER BY fechaRecepcionMillis DESC LIMIT 15")
     fun observarTodasLasAlertas(): Flow<List<EntidadAlerta>>
 }
