@@ -58,6 +58,29 @@ class MonitoreoViewModel(
                     alcanceCorrutina = viewModelScope,
                 )
             }
+            is EventoUiMonitoreo.AlternarSeleccionAlerta -> {
+                val nuevoId = if (_estadoUi.value.alertaSeleccionadaId == evento.id) null else evento.id
+                _estadoUi.update { it.copy(alertaSeleccionadaId = nuevoId) }
+            }
+            EventoUiMonitoreo.SolicitarEliminacionAlerta -> _estadoUi.update { it.copy(mostrarDialogoEliminarAlerta = true) }
+            EventoUiMonitoreo.CancelarEliminacionAlerta -> _estadoUi.update { it.copy(mostrarDialogoEliminarAlerta = false) }
+            EventoUiMonitoreo.ConfirmarEliminacionAlerta -> eliminarAlertaSeleccionada()
+        }
+    }
+
+    private fun eliminarAlertaSeleccionada() {
+        val id = _estadoUi.value.alertaSeleccionadaId ?: return
+        _estadoUi.update { it.copy(mostrarDialogoEliminarAlerta = false) }
+        viewModelScope.launch {
+            when (val resultado = repositorioAlertas.eliminarPorId(id)) {
+                is co.uan.epilepsy.dpa_saam.core.result.ResultadoOperacionApp.Exito -> {
+                    _estadoUi.update { it.copy(alertaSeleccionadaId = null) }
+                    mostrarSnackbar(contextoAplicacion.getString(R.string.msg_alert_deleted))
+                }
+                is co.uan.epilepsy.dpa_saam.core.result.ResultadoOperacionApp.Error -> {
+                    mostrarSnackbar(resultado.mensaje)
+                }
+            }
         }
     }
 
@@ -126,10 +149,14 @@ class MonitoreoViewModel(
         viewModelScope.launch {
             repositorioAlertas.observarTodasLasAlertas().collect { historial ->
                 try {
-                    _estadoUi.update {
-                        it.copy(
+                    _estadoUi.update { estadoActual ->
+                        val idSeleccionado = estadoActual.alertaSeleccionadaId
+                        val sigueExistiendo = idSeleccionado != null && historial.any { it.id == idSeleccionado }
+                        estadoActual.copy(
                             historialAlertas = historial,
                             ultimaLecturaRecibida = historial.firstOrNull(),
+                            alertaSeleccionadaId = if (sigueExistiendo) idSeleccionado else null,
+                            mostrarDialogoEliminarAlerta = if (sigueExistiendo) estadoActual.mostrarDialogoEliminarAlerta else false
                         )
                     }
                 } catch (e: Exception) {

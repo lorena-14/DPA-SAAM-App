@@ -14,4 +14,6 @@ data class EstadoUiMonitoreo(
     val mensajeNotificacionSnackbar: String? = null,
     val mostrarDialogoOptimizacionBateria: Boolean = false,
     val mostrarDialogoPermisoNotificaciones: Boolean = false,
+    val alertaSeleccionadaId: Long? = null,
+    val mostrarDialogoEliminarAlerta: Boolean = false,
 )

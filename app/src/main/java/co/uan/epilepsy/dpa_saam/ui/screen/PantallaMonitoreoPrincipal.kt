@@ -13,6 +13,18 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.semantics.Role
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -88,6 +100,42 @@ fun PantallaMonitoreoPrincipal(
         )
     }
 
+    if (estadoUi.mostrarDialogoEliminarAlerta) {
+        val alertaSeleccionada = estadoUi.historialAlertas.find { it.id == estadoUi.alertaSeleccionadaId }
+        if (alertaSeleccionada != null) {
+            val cuerpoDialogo = if (alertaSeleccionada.esSimulada) {
+                stringResource(
+                    R.string.delete_alert_dialog_body_simulated,
+                    formateadorFechaHora.format(alertaSeleccionada.fechaRecepcion),
+                    alertaSeleccionada.spo2,
+                    alertaSeleccionada.bpm
+                )
+            } else {
+                stringResource(
+                    R.string.delete_alert_dialog_body,
+                    formateadorFechaHora.format(alertaSeleccionada.fechaRecepcion),
+                    alertaSeleccionada.spo2,
+                    alertaSeleccionada.bpm
+                )
+            }
+            UanModal(
+                visible = true,
+                onDismissRequest = { viewModel.procesarEvento(EventoUiMonitoreo.CancelarEliminacionAlerta) },
+                title = stringResource(R.string.delete_alert_dialog_title),
+                body = cuerpoDialogo,
+                primaryAction = UanModalAction(
+                    label = stringResource(R.string.delete_alert_confirm),
+                    onClick = { viewModel.procesarEvento(EventoUiMonitoreo.ConfirmarEliminacionAlerta) }
+                ),
+                secondaryAction = UanModalAction(
+                    label = stringResource(R.string.delete_alert_cancel),
+                    onClick = { viewModel.procesarEvento(EventoUiMonitoreo.CancelarEliminacionAlerta) }
+                ),
+                tone = UanTone.Danger,
+            )
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(estadoSnackbar) },
@@ -130,25 +178,60 @@ fun PantallaMonitoreoPrincipal(
                 }
             }
 
-            // TODO: Eliminar este botón y la lógica de simulación antes de producción
             if (BuildConfig.DEBUG) {
                 item {
-                    UanButton(
-                        onClick = { viewModel.procesarEvento(EventoUiMonitoreo.SimularAlertaPrueba) },
+                    var mostrarSimulador by rememberSaveable { mutableStateOf(false) }
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        style = UanButtonStyle.Secondary,
-                        size = UanButtonSize.Regular,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(stringResource(R.string.btn_simulate_alert))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.test_tools_title),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Switch(
+                                checked = mostrarSimulador,
+                                onCheckedChange = { mostrarSimulador = it }
+                            )
+                        }
+                        if (mostrarSimulador) {
+                            UanButton(
+                                onClick = { viewModel.procesarEvento(EventoUiMonitoreo.SimularAlertaPrueba) },
+                                modifier = Modifier.fillMaxWidth(),
+                                style = UanButtonStyle.Secondary,
+                                size = UanButtonSize.Regular,
+                            ) {
+                                Text(stringResource(R.string.btn_simulate_alert))
+                            }
+                        }
                     }
                 }
             }
 
             item {
-                Text(
-                    text = stringResource(R.string.alert_history_title),
-                    modifier = Modifier.padding(top = 8.dp),
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = stringResource(R.string.alert_history_title))
+                    if (estadoUi.alertaSeleccionadaId != null) {
+                        UanButton(
+                            onClick = { viewModel.procesarEvento(EventoUiMonitoreo.SolicitarEliminacionAlerta) },
+                            style = UanButtonStyle.Secondary,
+                            size = UanButtonSize.Regular
+                        ) {
+                            Text(stringResource(R.string.btn_delete_alert))
+                        }
+                    }
+                }
             }
 
             if (estadoUi.historialAlertas.isEmpty()) {
@@ -160,11 +243,40 @@ fun PantallaMonitoreoPrincipal(
                 }
             } else {
                 items(estadoUi.historialAlertas, key = { it.id }) { lectura ->
-                    UanLists(
-                        title = "SpO2 ${lectura.spo2}% · BPM ${lectura.bpm}",
-                        supportingText = formateadorFechaHora.format(lectura.fechaRecepcion),
-                        itemDescription = "Alerta del ${formateadorFechaHora.format(lectura.fechaRecepcion)}",
-                    )
+                    val estaSeleccionada = estadoUi.alertaSeleccionadaId == lectura.id
+                    val modificadorSeleccion = if (estaSeleccionada) {
+                        Modifier.border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    } else {
+                        Modifier
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                role = Role.Button,
+                                onClick = { viewModel.procesarEvento(EventoUiMonitoreo.AlternarSeleccionAlerta(lectura.id)) }
+                            )
+                            .then(modificadorSeleccion)
+                    ) {
+                        val sufijoSimulada = if (lectura.esSimulada) stringResource(R.string.alert_history_simulated_suffix) else ""
+                        val textoSoporte = formateadorFechaHora.format(lectura.fechaRecepcion) + sufijoSimulada
+                        val textoDescripcion = if (lectura.esSimulada) {
+                            "Alerta simulada del ${formateadorFechaHora.format(lectura.fechaRecepcion)}"
+                        } else {
+                            "Alerta del ${formateadorFechaHora.format(lectura.fechaRecepcion)}"
+                        }
+
+                        UanLists(
+                            title = "SpO2 ${lectura.spo2}% · BPM ${lectura.bpm}",
+                            supportingText = textoSoporte,
+                            itemDescription = textoDescripcion,
+                        )
+                    }
                 }
             }
         }
@@ -211,6 +323,14 @@ private fun TarjetaUltimaAlerta(estadoUi: EstadoUiMonitoreo) {
         supportingContent = if (lectura != null) {
             {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (lectura.esSimulada) {
+                        UanBadge(
+                            text = stringResource(R.string.alert_simulated_badge),
+                            tone = UanTone.Warning,
+                            emphasis = UanBadgeEmphasis.Tonal,
+                            contentDescription = stringResource(R.string.alert_simulated_badge),
+                        )
+                    }
                     Text(text = "SpO2: ${lectura.spo2}%")
                     Text(text = "BPM: ${lectura.bpm}")
                 }

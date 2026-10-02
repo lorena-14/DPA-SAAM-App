@@ -14,4 +14,7 @@ interface DaoAlertas {
 
     @Query("SELECT * FROM alertas ORDER BY fechaRecepcionMillis DESC LIMIT 15")
     fun observarTodasLasAlertas(): Flow<List<EntidadAlerta>>
+
+    @Query("DELETE FROM alertas WHERE id = :id")
+    suspend fun eliminarPorId(id: Long)
 }

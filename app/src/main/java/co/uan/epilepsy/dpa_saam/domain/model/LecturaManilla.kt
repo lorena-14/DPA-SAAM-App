@@ -9,4 +9,11 @@ data class LecturaManilla(
     val porcentajeBateria: Int? = null,
     val fechaRecepcion: Instant = Instant.now(),
     val direccionMacDispositivo: String = "",
-)
+) {
+    val esSimulada: Boolean
+        get() = direccionMacDispositivo == MAC_SIMULADOR
+
+    companion object {
+        const val MAC_SIMULADOR = "SIMULADOR_DEBUG"
+    }
+}

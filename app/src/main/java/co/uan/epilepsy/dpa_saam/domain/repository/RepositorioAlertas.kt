@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface RepositorioAlertas {
     fun observarTodasLasAlertas(): Flow<List<LecturaManilla>>
     suspend fun insertar(lectura: LecturaManilla): ResultadoOperacionApp<Unit>
+    suspend fun eliminarPorId(id: Long): ResultadoOperacionApp<Unit>
 }

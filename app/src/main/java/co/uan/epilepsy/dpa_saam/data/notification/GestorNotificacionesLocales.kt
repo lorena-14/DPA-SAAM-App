@@ -31,9 +31,14 @@ class GestorNotificacionesLocales(
         try {
             val horaTexto = formateadorHora.format(lectura.fechaRecepcion)
             val cuerpoMensaje = "SpO2: ${lectura.spo2}% · BPM: ${lectura.bpm} · $horaTexto"
+            val titulo = if (lectura.esSimulada) {
+                contexto.getString(R.string.notification_alert_simulated_title)
+            } else {
+                contexto.getString(R.string.notification_alert_title)
+            }
             val notificacion = NotificationCompat.Builder(contexto, CANAL_ALERTAS)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(contexto.getString(R.string.notification_alert_title))
+                .setContentTitle(titulo)
                 .setContentText(cuerpoMensaje)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)

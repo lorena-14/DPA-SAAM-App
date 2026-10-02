@@ -7,4 +7,8 @@ sealed interface EventoUiMonitoreo {
     data object OcultarDialogoBateria : EventoUiMonitoreo
     data object OcultarDialogoNotificaciones : EventoUiMonitoreo
     data object SimularAlertaPrueba : EventoUiMonitoreo
+    data class AlternarSeleccionAlerta(val id: Long) : EventoUiMonitoreo
+    data object SolicitarEliminacionAlerta : EventoUiMonitoreo
+    data object CancelarEliminacionAlerta : EventoUiMonitoreo
+    data object ConfirmarEliminacionAlerta : EventoUiMonitoreo
 }

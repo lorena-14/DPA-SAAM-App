@@ -22,7 +22,7 @@ object SimuladorAlertasPrueba {
             bpm = 75,
             porcentajeBateria = 80,
             fechaRecepcion = Instant.now(),
-            direccionMacDispositivo = "SIMULADOR_DEBUG",
+            direccionMacDispositivo = LecturaManilla.MAC_SIMULADOR,
         )
 
         alcanceCorrutina.launch(Dispatchers.IO) {

@@ -31,6 +31,17 @@ class RepositorioAlertasImplementacion(
         }
     }
 
+    override suspend fun eliminarPorId(id: Long): ResultadoOperacionApp<Unit> {
+        return try {
+            daoAlertas.eliminarPorId(id)
+            ResultadoOperacionApp.Exito(Unit)
+        } catch (e: SQLiteException) {
+            ResultadoOperacionApp.Error("No se pudo eliminar la alerta", e)
+        } catch (e: Exception) {
+            ResultadoOperacionApp.Error("Error al eliminar la alerta", e)
+        }
+    }
+
     private fun EntidadAlerta.aModeloDominio(): LecturaManilla {
         return LecturaManilla(
             id = id,

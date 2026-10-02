@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DPA-SAAM</string>
     <string name="notification_alert_title">Lectura recibida</string>
+    <string name="notification_alert_simulated_title">Lectura simulada (prueba)</string>
     <string name="notification_battery_title">Carga la manilla</string>
     <string name="notification_battery_body">Batería al %1$d%% — recarga la manilla pronto</string>
     <string name="notification_foreground_title">Conectado a manilla</string>
@@ -19,6 +20,7 @@
     <string name="permissions_bluetooth_required">Se necesitan permisos Bluetooth para conectar la manilla</string>
 
     <!-- Textos de la Interfaz Principal -->
+    <string name="test_tools_title">Boton de prueba</string>
     <string name="battery_opt_title">Optimización de batería</string>
     <string name="battery_opt_body">Para mantener la conexión clínica con la manilla, se recomienda excluir DPA-SAAM de la optimización de batería del sistema.</string>
     <string name="battery_opt_configure">Configurar</string>
@@ -28,6 +30,16 @@
     <string name="alert_history_title">Historial de alertas</string>
     <string name="alert_history_empty_title">Sin lecturas</string>
     <string name="alert_history_empty_body">Las alertas recibidas aparecerán aquí</string>
+    <string name="alert_history_simulated_suffix"> · Simulada</string>
+
+    <string name="btn_delete_alert">Eliminar alerta</string>
+    <string name="delete_alert_dialog_title">Eliminar alerta</string>
+    <string name="delete_alert_dialog_body">¿Deseas eliminar la alerta del %1$s con SpO2: %2$s%% y BPM: %3$s? Esta acción no se puede deshacer.</string>
+    <string name="delete_alert_dialog_body_simulated">¿Deseas eliminar la alerta simulada del %1$s con SpO2: %2$s%% y BPM: %3$s? Esta acción no se puede deshacer.</string>
+    <string name="delete_alert_confirm">Eliminar</string>
+    <string name="delete_alert_cancel">Cancelar</string>
+    <string name="msg_alert_deleted">Alerta eliminada</string>
+    <string name="msg_alert_delete_error">No se pudo eliminar la alerta</string>
 
     <!-- Estados de conexión y tarjetas -->
     <string name="status_connected">Conectado</string>
@@ -39,6 +51,7 @@
     <string name="card_ble_body">Conexión con la manilla ESP32</string>
     <string name="card_alert_title">Última alerta</string>
     <string name="card_alert_empty">Esperando lectura de la manilla</string>
+    <string name="alert_simulated_badge">Simulada</string>
     <string name="card_battery_title">Batería manilla</string>
     <string name="card_battery_empty">No disponible</string>
     <string name="card_battery_low">Batería baja</string>
