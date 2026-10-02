@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
@@ -140,10 +142,16 @@ fun PantallaMonitoreoPrincipal(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(estadoSnackbar) },
         topBar = {
-            UanAppBar(
-                title = stringResource(R.string.app_name),
-                subtitle = obtenerSubtituloConexion(estadoUi.estadoConexion),
-            )
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .statusBarsPadding()
+            ) {
+                UanAppBar(
+                    title = stringResource(R.string.app_name),
+                    subtitle = obtenerSubtituloConexion(estadoUi.estadoConexion),
+                )
+            }
         },
     ) { rellenoInterno ->
         LazyColumn(
