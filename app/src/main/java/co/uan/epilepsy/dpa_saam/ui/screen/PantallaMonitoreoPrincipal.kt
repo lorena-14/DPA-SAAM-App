@@ -92,7 +92,7 @@ fun PantallaMonitoreoPrincipal(
             body = stringResource(R.string.battery_opt_body),
             primaryAction = UanModalAction(
                 label = stringResource(R.string.battery_opt_configure),
-                onClick = { viewModel.procesarEvento(EventoUiMonitoreo.ConfirmarExencionBateria) },
+                onClick = { viewModel.solicitarExencionOptimizacionBateria(contexto) },
             ),
             secondaryAction = UanModalAction(
                 label = stringResource(R.string.battery_opt_later),

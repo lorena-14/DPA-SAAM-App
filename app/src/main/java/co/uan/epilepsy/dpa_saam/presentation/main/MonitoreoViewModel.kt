@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.os.PowerManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -48,7 +49,6 @@ class MonitoreoViewModel(
         when (evento) {
             EventoUiMonitoreo.ReintentarConexion -> repositorioBluetooth.reintentarConexion()
             EventoUiMonitoreo.OcultarSnackbar -> _estadoUi.update { it.copy(mensajeNotificacionSnackbar = null) }
-            EventoUiMonitoreo.ConfirmarExencionBateria -> solicitarExencionOptimizacionBateria(contextoAplicacion)
             EventoUiMonitoreo.OcultarDialogoBateria -> _estadoUi.update { it.copy(mostrarDialogoOptimizacionBateria = false) }
             EventoUiMonitoreo.OcultarDialogoNotificaciones -> _estadoUi.update { it.copy(mostrarDialogoPermisoNotificaciones = false) }
             EventoUiMonitoreo.SimularAlertaPrueba -> {
@@ -105,14 +105,14 @@ class MonitoreoViewModel(
     }
 
     fun solicitarExencionOptimizacionBateria(contexto: Context) {
+        _estadoUi.update { it.copy(mostrarDialogoOptimizacionBateria = false) }
         try {
             val intencion = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
                 data = Uri.parse("package:${contexto.packageName}")
             }
             contexto.startActivity(intencion)
-            _estadoUi.update { it.copy(mostrarDialogoOptimizacionBateria = false) }
         } catch (_: Exception) {
-            mostrarSnackbar(contexto.getString(R.string.error_battery_opt))
+            mostrarSnackbar(contextoAplicacion.getString(R.string.error_battery_opt))
         }
     }
 
@@ -131,7 +131,11 @@ class MonitoreoViewModel(
                         ServicioPrimerPlanoManilla.iniciar(contextoAplicacion)
                         if (!yaSeConectoUnaVez) {
                             yaSeConectoUnaVez = true
-                            _estadoUi.update { it.copy(mostrarDialogoOptimizacionBateria = true) }
+                            val gestorEnergia = contextoAplicacion.getSystemService(Context.POWER_SERVICE) as PowerManager
+                            val estaIgnorandoOptimizacion = gestorEnergia.isIgnoringBatteryOptimizations(contextoAplicacion.packageName)
+                            if (!estaIgnorandoOptimizacion) {
+                                _estadoUi.update { it.copy(mostrarDialogoOptimizacionBateria = true) }
+                            }
                         }
                     }
 
